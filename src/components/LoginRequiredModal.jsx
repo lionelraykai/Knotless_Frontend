@@ -57,7 +57,10 @@ export default function LoginRequiredModal({ isOpen, onClose }) {
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5))' }}></div>
           
           <div style={{ position: 'relative', zIndex: 1, color: 'white' }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, marginBottom: '2rem', color: 'white' }}>Knotless</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+              <img src="/logo.png" alt="Knotless Logo" style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'contain' }} />
+              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', fontWeight: 700, color: 'white', margin: 0 }}>Knotless</h2>
+            </div>
             <hr style={{ width: '40px', border: '1px solid white', opacity: 0.5, marginBottom: '4rem' }} />
             
             <p style={{ fontSize: '1.75rem', lineHeight: 1.4, fontStyle: 'italic', fontFamily: 'var(--font-display)', marginBottom: '1.5rem', color: 'white' }}>

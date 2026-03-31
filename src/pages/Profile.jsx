@@ -207,7 +207,8 @@ export default function Profile() {
       </div>
 
       {/* Footer Branding */}
-      <div style={{ textAlign: 'center', marginTop: '6rem', opacity: 0.5 }}>
+      <div style={{ textAlign: 'center', marginTop: '6rem', opacity: 0.5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <img src="/logo.png" alt="Knotless Logo" style={{ width: '40px', height: '40px', marginBottom: '0.5rem', borderRadius: '6px', objectFit: 'contain' }} />
         <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--primary)' }}>Knotless</h2>
         <p className="label-caps" style={{ fontSize: '0.6rem', letterSpacing: '0.2em' }}>
           {user.name.toUpperCase()} © {new Date().getFullYear()}

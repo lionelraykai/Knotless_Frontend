@@ -50,7 +50,10 @@ export default function SignUp() {
       {/* Left Column: Mission & Branding */}
       <div className="split-left" style={{ padding: '3rem 10%', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '4rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', color: 'var(--primary)', marginBottom: '1rem' }}>Knotless</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+          <img src="/logo.png" alt="Knotless Logo" style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'contain' }} />
+          <h1 style={{ fontSize: '1.5rem', color: 'var(--primary)', margin: 0 }}>Knotless</h1>
+        </div>
           
           <div style={{ maxWidth: '480px' }}>
             <p style={{ fontSize: '1rem', color: 'var(--on-surface)', marginBottom: '0.75rem', fontWeight: 500 }}>

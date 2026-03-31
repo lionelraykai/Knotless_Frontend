@@ -24,8 +24,11 @@ export default function Navigation() {
           
           {/* Left Side: Logo + Nav Links */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-            <Link to="/" className="nav-link" style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.02em', color: 'var(--primary)' }}>
-              Knotless
+            <Link to="/" className="nav-link" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+              <img src="/logo.png" alt="Knotless Logo" style={{ width: '32px', height: '32px', borderRadius: '4px', objectFit: 'contain' }} />
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, letterSpacing: '0.02em', color: 'var(--primary)' }}>
+                Knotless
+              </span>
             </Link>
             <div className="nav-links hidden-mobile" style={{ display: 'flex', gap: '2rem' }}>
               <Link to="/" className="nav-link active" style={{ fontWeight: 600 }}>Home</Link>

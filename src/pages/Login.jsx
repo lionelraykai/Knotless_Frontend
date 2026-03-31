@@ -50,7 +50,8 @@ export default function Login() {
       
       <div style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '2rem 0' }}>
         
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+           <img src="/logo.png" alt="Knotless Logo" style={{ width: '80px', height: '80px', marginBottom: '1rem', borderRadius: '12px', objectFit: 'contain' }} />
            <h1 style={{ fontSize: '2rem', marginBottom: '0.25rem', color: 'var(--primary)' }}>Knotless</h1>
            <p className="label-caps" style={{ color: 'var(--on-surface-variant)', fontSize: '0.65rem', letterSpacing: '0.2em' }}>THE TACTILE ARCHIVE</p>
         </div>
