@@ -104,3 +104,17 @@ export const useVoteSolutionMutation = () => {
     },
   });
 };
+
+export const useAddReplyMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ knotId, solutionId, content }) => {
+      const response = await api.post(`/knots/${knotId}/solutions/${solutionId}/reply`, { content });
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries(['knot', variables.knotId]);
+    },
+  });
+};

@@ -6,7 +6,7 @@
 // For Vite: ensure these are defined in your .env file
 // IMPORTANT: Your Upload Preset must be set to 'Unsigned' in your Cloudinary Dashboard
 // otherwise it will keep asking for an API Key or Signature.
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dv699c2p0';
+const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dfwoe7vny';
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'knotless_preset';
 
 export const uploadToCloudinary = async (file) => {

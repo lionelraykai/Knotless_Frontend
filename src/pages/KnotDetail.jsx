@@ -15,7 +15,8 @@ import {
   useVoteKnotMutation, 
   useAddSolutionMutation,
   useMarkSolutionCorrectMutation,
-  useVoteSolutionMutation 
+  useVoteSolutionMutation,
+  useAddReplyMutation
 } from '../hooks/useKnotHooks';
 import KnotDetailSkeleton from '../components/skeletons/KnotDetailSkeleton';
 import { format } from 'date-fns';
@@ -43,7 +44,12 @@ export default function KnotDetail() {
   const { mutate: addSolution, isPending: submitting } = useAddSolutionMutation();
   const { mutate: markCorrect, isPending: marking } = useMarkSolutionCorrectMutation();
   const { mutate: voteSolution, isPending: votingSolution } = useVoteSolutionMutation();
+  const { mutate: addReply, isPending: replying } = useAddReplyMutation();
   const [insight, setInsight] = useState('');
+  
+  // Reply states
+  const [replyingTo, setReplyingTo] = useState(null);
+  const [replyText, setReplyText] = useState('');
 
   if (isLoading) return <KnotDetailSkeleton />;
 
@@ -81,6 +87,21 @@ export default function KnotDetail() {
     addSolution({ knotId: id, content: insight }, {
       onSuccess: () => {
         setInsight('');
+      }
+    });
+  };
+
+  const handleSubmitReply = (solutionId) => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
+    if (!replyText.trim()) return;
+
+    addReply({ knotId: id, solutionId, content: replyText }, {
+      onSuccess: () => {
+        setReplyingTo(null);
+        setReplyText('');
       }
     });
   };
@@ -228,7 +249,7 @@ export default function KnotDetail() {
                        </div>
                     </div>
                     
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                        {isAuthor && (
                          <button 
                            onClick={() => markCorrect({ knotId: id, solutionId: solution._id })}
@@ -257,6 +278,33 @@ export default function KnotDetail() {
                            </span>
                          </button>
                        )}
+                       
+                       <button 
+                         onClick={() => {
+                           if (replyingTo === solution._id) {
+                             setReplyingTo(null);
+                           } else {
+                             setReplyingTo(solution._id);
+                           }
+                         }}
+                         style={{ 
+                           display: 'flex', 
+                           alignItems: 'center', 
+                           gap: '0.25rem', 
+                           background: 'none', 
+                           border: 'none', 
+                           color: replyingTo === solution._id ? 'var(--primary)' : 'var(--on-surface-variant)', 
+                           fontSize: '0.9rem', 
+                           cursor: 'pointer', 
+                           fontWeight: 600,
+                           transition: 'all 0.2s ease'
+                         }}
+                         title="Reply to this solution"
+                       >
+                         <MessageSquare size={16} /> 
+                         Reply
+                       </button>
+
                        <button 
                          onClick={() => {
                            if (!user) {
@@ -293,6 +341,88 @@ export default function KnotDetail() {
                  <p style={{ fontSize: '1rem', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
                    {solution.content}
                  </p>
+
+                 {/* Replies Section */}
+                 {solution.replies && solution.replies.length > 0 && (
+                   <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--outline-variant)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                     {solution.replies.map(reply => (
+                       <div key={reply._id} style={{ display: 'flex', gap: '0.75rem', paddingLeft: '1rem', borderLeft: '2px solid var(--surface-variant)' }}>
+                          <img 
+                            src={reply.user?.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=40&h=40'} 
+                            alt={reply.user?.name} 
+                            style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover' }} 
+                          />
+                          <div>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                               <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>{reply.user?.name || 'Contributor'}</span>
+                               <span style={{ fontSize: '0.65rem', color: 'var(--on-surface-variant)' }}>{formatTime(reply.createdAt)}</span>
+                             </div>
+                             <p style={{ fontSize: '0.9rem', lineHeight: 1.5, margin: 0, color: 'var(--on-surface)' }}>
+                               {reply.content}
+                             </p>
+                          </div>
+                       </div>
+                     ))}
+                   </div>
+                 )}
+
+                 {/* Reply Input Form */}
+                 {replyingTo === solution._id && (
+                   <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px dashed var(--outline-variant)' }}>
+                      {!user ? (
+                        <div style={{ textAlign: 'center', padding: '1.5rem 1rem', border: '1px dashed var(--outline-variant)', borderRadius: 'var(--radius-default)', backgroundColor: 'var(--surface-container-low)' }}>
+                          <p style={{ color: 'var(--on-surface-variant)', marginBottom: '1rem', fontSize: '0.9rem' }}>You must be logged in to reply.</p>
+                          <button onClick={() => openLoginModal()} className="btn-secondary" style={{ padding: '0.5rem 1.5rem', fontSize: '0.85rem' }}>
+                            Login to Reply
+                          </button>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                           <img 
+                             src={user.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=48&h=48'} 
+                             alt={user.name} 
+                             style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} 
+                           />
+                           <div style={{ flex: 1 }}>
+                             <textarea 
+                               rows="2" 
+                               value={replyText}
+                               onChange={(e) => setReplyText(e.target.value)}
+                               placeholder={`Add a reply to ${solution.user?.name || 'this solution'}...`}
+                               style={{ 
+                                 width: '100%', 
+                                 padding: '0.75rem', 
+                                 backgroundColor: 'var(--surface)', 
+                                 border: '1px solid var(--outline-variant)',
+                                 borderRadius: 'var(--radius-md)',
+                                 resize: 'none',
+                                 fontSize: '0.9rem',
+                                 fontFamily: 'inherit',
+                                 marginBottom: '0.75rem'
+                               }}
+                             />
+                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                               <button 
+                                 className="btn-secondary" 
+                                 style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
+                                 onClick={() => { setReplyingTo(null); setReplyText(''); }}
+                               >
+                                 Cancel
+                               </button>
+                               <button 
+                                 className="btn-primary" 
+                                 style={{ padding: '0.4rem 1rem', fontSize: '0.8rem' }}
+                                 onClick={() => handleSubmitReply(solution._id)}
+                                 disabled={replying || !replyText.trim()}
+                               >
+                                 {replying ? <Loader2 className="animate-spin" size={14} /> : 'Reply'}
+                               </button>
+                             </div>
+                           </div>
+                        </div>
+                      )}
+                   </div>
+                 )}
               </div>
             );
           })

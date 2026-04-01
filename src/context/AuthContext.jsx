@@ -29,6 +29,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
   };
 
+  const updateUser = (updatedData) => {
+    setUser(prev => {
+      if (!prev) return null;
+      const newUser = { ...prev, ...updatedData };
+      localStorage.setItem('user', JSON.stringify(newUser));
+      return newUser;
+    });
+  };
+
   const openLoginModal = () => setLoginModalOpen(true);
   const closeLoginModal = () => setLoginModalOpen(false);
 
@@ -37,6 +46,7 @@ export const AuthProvider = ({ children }) => {
       user, 
       login, 
       logout,
+      updateUser,
       isLoginModalOpen,
       openLoginModal,
       closeLoginModal,

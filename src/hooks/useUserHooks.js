@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 
 // Fetch current user profile
@@ -22,16 +23,17 @@ export const useProfile = () => {
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
+  const { updateUser } = useAuth();
   
   return useMutation({
     mutationFn: updateProfile,
     onSuccess: (data) => {
       // Invalidate and refetch profile data
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      // Also update the local user object if needed
-      const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const updatedUser = { ...savedUser, ...data };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      // Update global auth state and localStorage
+      if (updateUser) {
+        updateUser(data);
+      }
     },
   });
 };
