@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Bell, User, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Bell, User, Menu, X, FileText } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../hooks/useUserHooks';
 
 export default function Navigation() {
   const { user, logout, openLoginModal, isAuthenticated } = useAuth();
+  const { data } = useProfile();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+
+  const isActive = (path) => location.pathname === path;
 
   const handlePostClick = () => {
     setDrawerOpen(false);
@@ -31,9 +36,9 @@ export default function Navigation() {
               </span>
             </Link>
             <div className="nav-links hidden-mobile" style={{ display: 'flex', gap: '2rem' }}>
-              <Link to="/" className="nav-link active" style={{ fontWeight: 600 }}>Home</Link>
-              <Link to="/" className="nav-link" style={{ color: 'var(--on-surface-variant)', fontWeight: 500 }}>Categories</Link>
-              <Link to="/" className="nav-link" style={{ color: 'var(--on-surface-variant)', fontWeight: 500 }}>Archive</Link>
+              <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} style={{ fontWeight: isActive('/') ? 700 : 500 }}>Home</Link>
+              <Link to="/blogs" className={`nav-link ${isActive('/blogs') ? 'active' : ''}`} style={{ fontWeight: isActive('/blogs') ? 700 : 500 }}>Blogs</Link>
+              <Link to="/drafts" className={`nav-link ${isActive('/drafts') ? 'active' : ''}`} style={{ fontWeight: isActive('/drafts') ? 700 : 500 }}>Drafts</Link>
             </div>
           </div>
           
@@ -57,8 +62,8 @@ export default function Navigation() {
               {isAuthenticated ? (
                 <div style={{ cursor: 'pointer', position: 'relative' }} onClick={() => navigate('/profile')} title="View Profile">
                   <img 
-                    src={user?.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=48&h=48'}
-                    alt={user?.name || 'User'} 
+                    src={data?.user?.avatar || null}
+                    alt={data?.user?.name || 'User'} 
                     style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} 
                   />
                 </div>
@@ -97,9 +102,9 @@ export default function Navigation() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          <Link to="/" className="nav-link" style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Home</Link>
-          <Link to="/" className="nav-link" style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Categories</Link>
-          <Link to="/" className="nav-link" style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Archive</Link>
+          <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Home</Link>
+          <Link to="/blogs" className={`nav-link ${isActive('/blogs') ? 'active' : ''}`} style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Blogs</Link>
+          <Link to="/drafts" className={`nav-link ${isActive('/drafts') ? 'active' : ''}`} style={{ fontSize: '1.25rem' }} onClick={() => setDrawerOpen(false)}>Drafts</Link>
           
           <hr style={{ border: 'none', borderTop: '1px solid var(--surface-container-high)', margin: '1rem 0' }} />
 

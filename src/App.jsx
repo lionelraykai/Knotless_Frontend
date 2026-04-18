@@ -11,6 +11,10 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
+import BlogsFeed from './pages/BlogsFeed';
+import BlogDetail from './pages/BlogDetail';
+import CreateBlog from './pages/CreateBlog';
+import DraftsFeed from './pages/DraftsFeed';
 import ScrollToTop from './components/ScrollToTop';
 
 import './App.css';
@@ -61,7 +65,19 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/knot/:id" element={<KnotDetail />} />
             
+            <Route path="/blogs" element={<BlogsFeed />} />
+            <Route path="/blogs/:id" element={<BlogDetail />} />
+            <Route path="/drafts" element={<DraftsFeed />} />
+
             {/* Protected Route */}
+            <Route 
+              path="/post-blog" 
+              element={
+                <ProtectedRoute>
+                  <CreateBlog />
+                </ProtectedRoute>
+              } 
+            />
             <Route 
               path="/post" 
               element={

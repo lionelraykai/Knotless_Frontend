@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, Check } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useLoginMutation } from '../hooks/useAuthHooks';
+import welcomeVideo from '../assets/AZ2hVmeFS53xd3QBqxNkCQ-AZ2hVmeFN9f21FeMhBl62A.mp4';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -17,11 +18,13 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [showWelcome, setShowWelcome] = useState(false);
+
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !showWelcome) {
       navigate('/', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, showWelcome]);
 
   const { mutate: login, isPending, error: apiError } = useLoginMutation();
 
@@ -38,8 +41,11 @@ export default function Login() {
   const onSubmit = (data) => {
     login(data, {
       onSuccess: (response) => {
+        setShowWelcome(true);
         setAuthData(response._id, response.token);
-        navigate(from, { replace: true });
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 5000);
       },
     });
   };
@@ -141,6 +147,26 @@ export default function Login() {
         </div>
 
       </div>
+
+      {showWelcome && (
+        <div className="welcome-overlay">
+          <video 
+            src={welcomeVideo} 
+            autoPlay 
+            muted 
+            loop
+            playsInline 
+            className="welcome-video-bg"
+          />
+          <div className="welcome-content">
+            <div className="pulse-icon">
+              <Check size={36} color="var(--primary)" />
+            </div>
+            <h2>Welcome</h2>
+            <p>Accessing your archive...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import { Loader2, Upload, ChevronDown, Check } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Loader2, Upload, ChevronDown, Check, Save } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useState, useRef, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useCreateKnotMutation } from '../hooks/useKnotHooks';
+import { useUpsertDraftMutation } from '../hooks/useDraftHooks';
 import { uploadToCloudinary } from '../utils/cloudinary';
 
 const CATEGORIES = [
@@ -31,12 +32,18 @@ const knotSchema = z.object({
 
 export default function PostKnot() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [imagePreview, setImagePreview] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const dropdownRef = useRef(null);
   const { mutate: createKnot, isPending, error: apiError } = useCreateKnotMutation();
+  const { mutate: upsertDraft, isPending: isSavingDraft } = useUpsertDraftMutation();
+
+  const initialDraft = location.state?.draft;
+  const [draftId, setDraftId] = useState(initialDraft?._id || null);
 
   const {
     register,
@@ -47,9 +54,17 @@ export default function PostKnot() {
   } = useForm({
     resolver: zodResolver(knotSchema),
     defaultValues: {
-      category: 'Development',
+      category: initialDraft?.category || 'Development',
+      title: initialDraft?.title || '',
+      description: initialDraft?.content || '',
     }
   });
+
+  useEffect(() => {
+    if (initialDraft?.image) {
+      setImagePreview(initialDraft.image);
+    }
+  }, [initialDraft]);
 
   const selectedCategory = watch('category');
 
@@ -75,6 +90,28 @@ export default function PostKnot() {
   const handleCategorySelect = (category) => {
     setValue('category', category);
     setIsDropdownOpen(false);
+  };
+
+  const handleSaveDraft = () => {
+    setSaveSuccess(false);
+    const data = watch();
+    
+    const draftData = {
+      draftId,
+      type: 'knot',
+      title: data.title,
+      content: data.description,
+      category: data.category,
+      image: imagePreview // Cloudinary URL if uploaded
+    };
+
+    upsertDraft(draftData, {
+      onSuccess: (data) => {
+        setDraftId(data._id);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      }
+    });
   };
 
   const onSubmit = async (data) => {
@@ -232,16 +269,27 @@ export default function PostKnot() {
            </p>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: 'var(--spacing-8)' }}>
-           <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
-           <button 
-             type="submit" 
-             className="btn-primary"
-             disabled={isPending || isUploading}
-           >
-             {isPending || isUploading ? <Loader2 className="animate-spin" size={20} /> : 'Publish to Archive'}
-           </button>
-        </div>
+         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: 'var(--spacing-8)', alignItems: 'center' }}>
+            {saveSuccess && <span style={{ color: 'var(--primary)', fontSize: '0.9rem', fontWeight: 600 }}>Draft saved!</span>}
+            <button type="button" className="btn-secondary" onClick={() => navigate(-1)}>Cancel</button>
+            <button 
+              type="button" 
+              className="btn-secondary" 
+              onClick={handleSaveDraft}
+              disabled={isSavingDraft}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              {isSavingDraft ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+              Save Draft
+            </button>
+            <button 
+              type="submit" 
+              className="btn-primary"
+              disabled={isPending || isUploading}
+            >
+              {isPending || isUploading ? <Loader2 className="animate-spin" size={20} /> : 'Publish to Archive'}
+            </button>
+         </div>
       </form>
       <div className="spacer-y-8"></div>
     </div>

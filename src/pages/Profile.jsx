@@ -41,7 +41,7 @@ export default function Profile() {
       <div style={{ textAlign: 'center', margin: '4rem 0' }}>
         <div style={{ position: 'relative', display: 'inline-block', marginBottom: '2rem' }}>
           <img 
-            src={user.avatar} 
+            src={user.avatar || null} 
             alt={user.name} 
             style={{ width: '160px', height: '160px', borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--surface-container-high)' }} 
           />

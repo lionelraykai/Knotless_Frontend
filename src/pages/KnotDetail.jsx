@@ -19,7 +19,7 @@ import {
   useAddReplyMutation
 } from '../hooks/useKnotHooks';
 import KnotDetailSkeleton from '../components/skeletons/KnotDetailSkeleton';
-import { format } from 'date-fns';
+import { useProfile } from '../hooks/useUserHooks';
 
 // Helper to format distances in words (simplified version)
 const formatTime = (dateString) => {
@@ -39,6 +39,7 @@ export default function KnotDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, openLoginModal } = useAuth();
+  const { data } = useProfile();
   const { data: knot, isLoading, isError } = useKnot(id);
   const { mutate: upvote, isPending: upvoting } = useVoteKnotMutation();
   const { mutate: addSolution, isPending: submitting } = useAddSolutionMutation();
@@ -379,8 +380,8 @@ export default function KnotDetail() {
                       ) : (
                         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
                            <img 
-                             src={user.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=48&h=48'} 
-                             alt={user.name} 
+                             src={data?.user?.avatar || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=48&h=48'} 
+                             alt={data?.user?.name} 
                              style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} 
                            />
                            <div style={{ flex: 1 }}>
