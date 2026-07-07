@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api',
+  baseURL: 'https://knotless-backend.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -30,7 +30,7 @@ api.interceptors.response.use(
       // Clear token and user state first
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
+
       // Optional: Refresh page or redirect to login (only if not already there)
       if (window.location.pathname !== '/login') {
         window.location.href = '/login';
